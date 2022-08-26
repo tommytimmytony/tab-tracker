@@ -28,7 +28,7 @@
 }
 
 .tabs_itemName{
-   width: 100%;
+  width: 100%;
   height: 75%;
   font-size: 1rem;
   font-weight: 400;
@@ -40,7 +40,7 @@
 }
 
 .tabs_itemPrice{
-width: 100%;
+  width: 100%;
   height: 25%;
   font-size: 1rem;
   font-weight: 400;
@@ -51,11 +51,24 @@ width: 100%;
   margin: 0;
 }
 
+.delete_tab_btn{
+  border-style: groove;
+  border-radius: 5px;
+  background-color: aquamarine;
+  width: 25%;
+  height: 25%;
+  font-size: 0.75rem;
+  position: relative;
+  float: right;
+  text-align: center;
+  justify-self: center;
+  border-color: black;
+  border-width: 1px;
+}
 .items_container {
   width: 30%;
   background-color: white;
   padding: 0;
-  /* grid-template-rows: 0.5fr 2fr 1fr; */
 }
 
 .mode_container {
@@ -76,7 +89,7 @@ width: 100%;
 
 .movements_container {
   display: grid;
-  grid-template-columns: 3fr 1fr 1fr 2fr;
+  grid-template-columns: 3fr 1fr 1fr 2fr 0.75fr;
   grid-auto-rows: 0fr;
   text-align: center;
   font-size: 1rem;
@@ -86,6 +99,7 @@ width: 100%;
 }
 
 .movements_text {
+  display: inline-block;
   background-color: rgba(0, 255, 255, 0.178);
   color: orange;
   font-weight: 500;
@@ -103,6 +117,17 @@ width: 100%;
   align-self: start;
 }
 
+.delete_item_btn{
+  text-align: center;
+  align-self: center;
+  border-style: groove;
+  border-radius: 5px;
+  background-color: aquamarine;
+  width: 100%;
+  height: 80%;
+  font-size: 0.70rem;
+  margin-top: 1px;
+}
 .checkout_description {
   list-style: none;
   padding: 5px;
