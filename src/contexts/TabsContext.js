@@ -20,12 +20,13 @@ export const TabsProvider = ({ children }) => {
       return [...prevTabs, { id: uuidv4(), name, price }];
     });
   }
+
   function addOrdersTabs({}) {}
   function addHistoryTabs({}) {}
   function addItemsMovements({ name, price }) {
     setMovements((prevMovements) => {
       let quantity = 1;
-      let total = price;
+      let total = Number(price);
       // When updating useState directly using indexs
       // useEffect can't identify the updated
       // therefore it won't render (use an newArr instead)
@@ -35,7 +36,7 @@ export const TabsProvider = ({ children }) => {
       );
       if (movementIndex !== -1) {
         quantity = prevMovements[movementIndex].quantity + 1;
-        total = quantity * price;
+        total = quantity * Number(price);
         newArr[movementIndex] = { name, quantity, price, total };
         console.log(prevMovements);
         console.log(movementIndex);

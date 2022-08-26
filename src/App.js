@@ -4,8 +4,9 @@ import Orders from "./components/Orders/Orders";
 import History from "./components/History/History";
 import { useState, useEffect } from "react";
 import Movements from "./components/Menu/Movements";
-import AddTabsBoxModal from "./components/Menu/AddTabsBoxModal";
+import Display from "./components/Menu/Display";
 import { useTabs } from "./contexts/TabsContext";
+
 function App() {
   const [showMode, setShowMode] = useState(<Menu />);
   const [showHighlight, setShowHighlight] = useState("Menu");
@@ -73,23 +74,18 @@ function App() {
             <div className="movements_text">Each</div>
             <div className="movements_text">Total</div>
             <div className="movements_text">&#8203;</div>
-            <div className="movements_item">Mango</div>
-            <div className="movements_item">2</div>
-            <div className="movements_item">3.00</div>
-            <div className="movements_item">6.00</div>
-            <button className="delete_item_btn">X</button>
-
-              {movements.map((movement) => {
-                return (
-                  <Movements
-                    key={movement.id}
-                    name={movement.name}
-                    quantity={movement.quantity}
-                    price={movement.price}
-                    total={movement.total}
-                  />
-                );
-              })}
+    
+            {movements.map((movement) => {
+              return (
+                <Movements
+                  key={movement.id}
+                  name={movement.name}
+                  quantity={movement.quantity}
+                  price={movement.price}
+                  total={movement.total}
+                />
+              );
+            })}
             {useEffect(() => {
               movements.map((movement) => {
                 return (
@@ -108,15 +104,16 @@ function App() {
           <hr style={{ margin: 0 }}></hr>
 
           <div className="display_container">
-            <ul className="checkout_description">
+            {/* <ul className="checkout_description">
               <li className="orderNum">Orders #</li>
               <li className="items">Items :</li>
               <li className="subTotal">SubTotal :</li>
               <li className="tax">Tax :</li>
             </ul>
 
-            <div className="total">Total :</div>
-
+            <div className="total">Total :</div> */}
+            <Display movements={movements} />
+      
             <div className="checkout_btn">
               <button className="checkout_hold_btn">HOLD</button>
               <button className="checkout_pay_btn">PAY</button>
