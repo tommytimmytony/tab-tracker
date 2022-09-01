@@ -19,7 +19,6 @@ export default function TabsBoxPlus() {
             onClick={(e) => {
               e.stopPropagation();
               setEditBtn(!editBtn);
-              console.log("Hello");
             }}
           >
             Edit

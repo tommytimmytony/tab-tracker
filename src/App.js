@@ -143,9 +143,9 @@ function App() {
                       return;
                     }
                     incrementOrderNums();
+                    setOrderNums(largestOrderNums);
                     addHistoryTabs({ orderNum: orderNums, Summary: movements });
                     setMovements([]);
-                    setOrderNums(largestOrderNums);
                   }}
                 >
                   PAY

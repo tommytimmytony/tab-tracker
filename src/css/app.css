@@ -58,6 +58,7 @@
   width: 25%;
   height: 25%;
   font-size: 0.75rem;
+  word-wrap: nowrap;
   position: relative;
   float: right;
   text-align: center;

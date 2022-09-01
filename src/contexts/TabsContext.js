@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 const TabsContext = React.createContext();
-
 export function useTabs() {
   return useContext(TabsContext);
 }
@@ -33,6 +33,9 @@ export const TabsProvider = ({ children }) => {
       price: 2.0,
     },
   };
+  const api = axios.create({
+    baseURL: `http://localhost:5000/api`,
+  });
   const [menuTabs, setMenuTabs] = useState([]);
   const [ordersTabs, setOrdersTabs] = useState([]);
   const [historyTabs, setHistoryTabs] = useState([]);
@@ -40,57 +43,114 @@ export const TabsProvider = ({ children }) => {
   const [orderNums, setOrderNums] = useState(1);
   const [editBtn, setEditBtn] = useState(false);
   const [largestOrderNums, setLargestOrderNums] = useState(1);
+  const [orderNumId, setOrderNumId] = useState(0);
 
   useEffect(() => {
-    for (const product in initialProducts) {
-      addMenuTabs({
-        name: initialProducts[product].name,
-        price: initialProducts[product].price,
-      });
+    async function start() {
+      console.log("initializing...");
+      let dataMenu = await fetchData("/menus");
+      let dataOrders = await fetchData("/orders");
+      let dataHistory = await fetchData("/histories");
+      let dataOrderNum = await fetchData("/ordernums");
+      console.log(dataOrderNum);
+      if (dataOrderNum.length === 0)
+        await createData("/ordernums", null, null, 1);
+      setOrderNumId(dataOrderNum[0]._id);
+      setMenuTabs(dataMenu);
+      setOrdersTabs(dataOrders);
+      setHistoryTabs(dataHistory);
+      setOrderNums(dataOrderNum[0].orderNum);
+      setLargestOrderNums(dataOrderNum[0].orderNum);
+      if (dataMenu.length === 0) {
+        for (const product in initialProducts) {
+          addMenuTabs({
+            name: initialProducts[product].name,
+            price: initialProducts[product].price,
+          });
+        }
+      }
     }
+  
+    start();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function addMenuTabs({ name, price }) {
-    setMenuTabs((prevTabs) => {
-      if (prevTabs.find((menuTabs) => menuTabs.name === name)) {
-        return prevTabs;
-      }
-      return [...prevTabs, { id: uuidv4(), name, price }];
+  async function fetchData(dbTable) {
+    try {
+      const data = await api.get(dbTable).then((res) => res.data);
+      return data;
+    } catch (err) {
+      console.log(`Error: ${err.message}`);
+    }
+  }
+
+  async function createData(dbTable, name, price, orderNum, Summary, date) {
+    let res;
+    if (dbTable === "/menus")
+      res = await api.post(dbTable, { name: name, price: price });
+    if (dbTable === "/orders")
+      res = await api.post(dbTable, { orderNum: orderNum, Summary: Summary });
+    if (dbTable === "/histories")
+      res = await api.post(dbTable, {
+        orderNum: orderNum,
+        Summary: Summary,
+        date: date,
+      });
+    if (dbTable === "/ordernums")
+      res = await api.post(dbTable, { orderNum: orderNum });
+    return res.data;
+  }
+
+  async function addMenuTabs({ name, price }) {
+    const prevTabs = await fetchData("/menus");
+    if (prevTabs.find((menuTabs) => menuTabs.name === name)) {
+      return;
+    }
+    const res = await createData("/menus", name, price);
+    setMenuTabs([...prevTabs, res]);
+  }
+
+  async function incrementOrderNums() {
+    const num = orderNums + 1;
+    const largestNum = Math.max(largestOrderNums, num);
+    setLargestOrderNums(largestNum);
+    setOrderNums(num);
+    await api.patch(`/ordernums/${orderNumId}`, {
+      orderNum: largestNum,
     });
   }
 
-  function incrementOrderNums() {
-    console.log(ordersTabs);
-    setOrderNums((prevNum) => {
-      const num = prevNum + 1;
-      const largestNum = Math.max(largestOrderNums, num);
-      setLargestOrderNums(largestNum);
-      console.log(largestNum);
-      return num;
+  async function addOrdersTabs({ orderNum, Summary }) {
+    console.log(Summary);
+    const prevOrders = [...ordersTabs];
+    const orderIndex = prevOrders.findIndex(
+      (order) => order.orderNum === orderNum
+    );
+    const orders = prevOrders.find((order) => order.orderNum === orderNum);
+    const largestNum = Math.max(largestOrderNums, orderNum + 1);
+    console.log(largestNum);
+    setLargestOrderNums(largestNum);
+    await api.patch(`/ordernums/${orderNumId}`, {
+      orderNum: largestNum,
     });
-  }
-
-  function addOrdersTabs({ orderNum, Summary }) {
-    setOrdersTabs((prevOrders) => {
-      const newArr = [...prevOrders];
-      const orderIndex = prevOrders.findIndex(
-        (order) => order.orderNum === orderNum
-      );
-      const orders = prevOrders.find((order) => order.orderNum === orderNum);
-      console.log(prevOrders);
-      if (orderIndex !== -1) {
-        setOrderNums(largestOrderNums);
-        console.log("Duplicate Tabs");
-        const id = orders.id;
-        const orderNum = orders.orderNum;
-        newArr[orderIndex] = { id, orderNum, Summary };
-        console.log(ordersTabs);
-        return newArr;
-      }
-      console.log("Unique tabs");
-      return [...prevOrders, { id: uuidv4(), orderNum, Summary }];
-    });
+    setOrderNums(largestNum);
+    if (orderIndex !== -1) {
+      // patch data
+      console.log("Duplicate Tabs");
+      const id = orders._id === undefined ? orders.id : orders._id;
+      const orderNum = orders.orderNum;
+      await api.patch(`/orders/${id}`, {
+        orderNum: orderNum,
+        Summary: Summary,
+      });
+      prevOrders[orderIndex] = { id, orderNum, Summary };
+      setOrdersTabs(prevOrders);
+      return;
+    }
+    console.log("Unique tabs");
+    const res = await createData("/orders", null, null, orderNum, Summary);
+    console.log(res);
+    setOrdersTabs([...prevOrders, res]);
   }
 
   function getDate() {
@@ -101,22 +161,34 @@ export const TabsProvider = ({ children }) => {
     const today = mm + "/" + dd + "/" + yyyy;
     return today;
   }
-  function addHistoryTabs({ orderNum, Summary }) {
-    const newArr = [...ordersTabs];
-    const orderIndex = ordersTabs.findIndex(
-      (order) => order.orderNum === orderNum
-    );
-    newArr.splice(orderIndex, 1);
+  async function addHistoryTabs({ orderNum, Summary }) {
+    const newArr = ordersTabs.filter((tab) => tab.orderNum !== orderNum);
+    const order = ordersTabs.find((order) => order.orderNum === orderNum);
+    console.log(order);
+    console.log(newArr);
+    if (order !== undefined) {
+      const id = order._id === undefined ? order.id : order._id;
+      await api.delete(`/orders/${id}`);
+    }
+    const largestNum = Math.max(largestOrderNums, orderNum + 1);
+    setOrderNums(largestNum);
     setOrdersTabs(newArr);
-    setHistoryTabs((prevHistoryTabs) => {
-      if (
-        prevHistoryTabs.find((historyTabs) => historyTabs.orderNum === orderNum)
-      ) {
-        return prevHistoryTabs;
-      }
-      const date = getDate();
-      return [...prevHistoryTabs, { id: uuidv4(), orderNum, date, Summary }];
-    });
+    console.log(historyTabs);
+    const date = getDate();
+    const res = await createData(
+      "/histories",
+      null,
+      null,
+      orderNum,
+      Summary,
+      date
+    );
+    const arr = [...historyTabs,res];
+    const sorted = arr.sort(function(a,b){
+      return (a.orderNum) - (b.orderNum);
+    })
+    console.log(sorted);
+    setHistoryTabs(sorted);
   }
 
   function switchItemMovements({ number, mode }) {
@@ -156,28 +228,27 @@ export const TabsProvider = ({ children }) => {
           price,
           total,
         };
-        // console.log(prevMovements);
-        // console.log(movementIndex);
         return newArr;
       }
-      // console.log(prevMovements);
-      // console.log(movementIndex);
       return [...prevMovements, { id: uuidv4(), name, quantity, price, total }];
     });
   }
 
-  function removeMenuTabs({ name }) {
-    const newArr = [...menuTabs];
-    const menuIndex = menuTabs.findIndex((tab) => tab.name === name);
-    newArr.splice(menuIndex, 1);
+  async function removeMenuTabs({ name }) {
+    const newArr = menuTabs.filter((tab) => tab.name !== name);
+    const menu = menuTabs.find((tab) => tab.name === name);
+    console.log(menu._id);
+    await api.delete(`/menus/${menu._id}`);
     setMenuTabs(newArr);
   }
 
-  function removeMovements({name}){
-     const newArr = [...movements];
-     const movementIndex = movements.findIndex((movement) => movement.name === name);
-     newArr.splice(movementIndex, 1);
-     setMovements(newArr);
+  function removeMovements({ name }) {
+    const newArr = [...movements];
+    const movementIndex = movements.findIndex(
+      (movement) => movement.name === name
+    );
+    newArr.splice(movementIndex, 1);
+    setMovements(newArr);
   }
 
   return (
