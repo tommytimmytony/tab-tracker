@@ -18,11 +18,7 @@ mongo.connect(
       return;
     }
     let dbo = db.db("tab-trackerDB");
-    dbo.collection(`${collectionName}`).drop(function (err, delOK){
-        if (err) throw err;
-        if(delOK) console.log(`Collection ${collectionName} deleted`);
-        db.close();
-    })
-  }
-)
-}
+    dbo.collection(`${collectionName}`).deleteMany({})
+    console.log(`Collection ${collectionName} deleted`);
+  })}
+

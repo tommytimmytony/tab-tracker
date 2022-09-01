@@ -157,11 +157,19 @@ export const TabsProvider = ({ children }) => {
   }
 
   function getDate() {
+     function addZero(time) {
+       if (time < 10) {
+         time = "0" + time;
+       }
+       return time;
+     }
     let date = new Date();
     let dd = String(date.getDate()).padStart(2, "0");
     let mm = String(date.getMonth() + 1).padStart(2, "0"); //January is 0!
     let yyyy = String(date.getFullYear());
-    const today = mm + "/" + dd + "/" + yyyy;
+    let hours = addZero(String(date.getHours()));
+    let min = addZero(String(date.getMinutes()));
+    const today = `${mm}/${dd}/${yyyy}  ${hours}:${min}` ;
     return today;
   }
   async function addHistoryTabs({ orderNum, Summary }) {
