@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
+require("dotenv").config();
 const TabsContext = React.createContext();
 export function useTabs() {
   return useContext(TabsContext);
@@ -33,8 +34,11 @@ export const TabsProvider = ({ children }) => {
       price: 2.0,
     },
   };
+
+  const baseURL = process.env.REACT_APP_BACKEND_URL;
+  console.log(baseURL);
   const api = axios.create({
-    baseURL: `http://localhost:5000/api`,
+    baseURL: baseURL,
   });
   const [menuTabs, setMenuTabs] = useState([]);
   const [ordersTabs, setOrdersTabs] = useState([]);
