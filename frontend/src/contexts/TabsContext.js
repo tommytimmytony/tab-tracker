@@ -35,7 +35,7 @@ export const TabsProvider = ({ children }) => {
     },
   };
 
-  const baseURL = process.env.REACT_APP_BACKEND_URL;
+  const baseURL = process.env.REACT_APP_BACKEND_URL || "https://localhost:5000/api";
   console.log(baseURL);
   const api = axios.create({
     baseURL: baseURL,
