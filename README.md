@@ -29,4 +29,4 @@ I work at a small family restaurant, so I thought it would be cool to create a s
 *  The code still need some more clean up, especially in TabsContext.js.  
 
 # LEARN
-*  My first REACT project. I was able to learn alot of react component, hooks, props drillings, and bootStrap. I was able to play with the database, API, HTTPS, and alot more.  
+*  My second REACT project. I was able to learn alot of react component, hooks, props drillings, and bootStrap. I was able to play with the database, API, HTTPS, and alot more.  
