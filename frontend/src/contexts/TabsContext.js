@@ -35,7 +35,9 @@ export const TabsProvider = ({ children }) => {
     },
   };
 
-  const baseURL = process.env.REACT_APP_BACKEND_URL || "https://localhost:5000/api";
+  //process.env.REACT_APP_BACKEND_URL 
+  // This URL is the for Heroku but failed due to Dynos Scaling
+  const baseURL ="http://localhost:5000/api";
   console.log(baseURL);
   const api = axios.create({
     baseURL: baseURL,
@@ -49,6 +51,7 @@ export const TabsProvider = ({ children }) => {
   const [largestOrderNums, setLargestOrderNums] = useState(1);
   const [orderNumId, setOrderNumId] = useState(0);
 
+  console.log(fetchData("/ordernums"))
   useEffect(() => {
     async function start() {
       console.log("initializing...");
