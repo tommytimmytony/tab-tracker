@@ -1,6 +1,6 @@
 # tab-tracker
 Link : https://tabs-tracker.herokuapp.com/  
-Update: Heroku had elimited their free plans so most of my website are down. Migrating to another place.  
+Update: Heroku had elimited their free plans so this website is not avaiable right now. I apologize. 
 
 <img src='Animation.gif' title='Video Walkthrough' width='1200' height='600' alt='Video Walkthrough' />
 
