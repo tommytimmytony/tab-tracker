@@ -1,6 +1,9 @@
 # tab-tracker
 Link : https://tabs-tracker.herokuapp.com/  
 Update: Heroku had elimited their free plans so most of my website are down. Migrating to another place.  
+
+<img src='Animation.gif' title='Video Walkthrough' width='1200' height='600' alt='Video Walkthrough' />
+
 This is the original version of tabs-tracker: https://tabs-tracker.netlify.app/  
 I work at a small family restaurant, so I thought it would be cool to create a simple EPOS system for us to used. 
 
